@@ -1,11 +1,11 @@
 import React from 'react';
 import { createDrawerNavigator } from 'react-navigation';
-import HomeScreen from './pages/HomeScreen';
+import MisCuentas from './pages/MisCuentas';
 import NotificationsScreen from './pages/NotificationsScreen';
 
 export default MyApp = createDrawerNavigator({
     Home: {
-        screen: HomeScreen,
+        screen: MisCuentas,
     },
     Notifications: {
         screen: NotificationsScreen,

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Button, Image, View } from 'react-native';
+import { Button, Image, View, ScrollView } from 'react-native';
+import NavHeader from '../components/NavHeader';
 import styles from '../styles/containerStyles';
 
 class NotificationsScreen extends React.Component {
@@ -15,12 +16,15 @@ class NotificationsScreen extends React.Component {
   
     render() {
         return (
-            <View style={styles.container}>
-                <Button
-                    onPress={() => this.props.navigation.goBack()}
-                    title="Ir a mis cuentas"
-                />
-            </View>
+            <>
+                <NavHeader toggler={() => this.props.navigation.toggleDrawer()} text="Notificaciones"/>
+                <View style={styles.container}>
+                    <Button
+                        onPress={() => this.props.navigation.goBack()}
+                        title="Ir a mis cuentas"
+                    />
+                </View>
+            </>
         );
     }
 }

@@ -6,10 +6,9 @@ const styles = StyleSheet.create({
         height: 24
     },
     container: {
-        flex: 1,
+        flex: 92,
         backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
+        alignItems: 'center'
     }
 });
 
