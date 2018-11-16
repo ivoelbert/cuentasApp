@@ -3,46 +3,49 @@ import { ScrollView, Button, View, Text, Modal } from 'react-native';
 import CuentaEntry from './CuentaEntry';
 import generalStyles from '../styles/generalStyles';
 import modalStyles from '../styles/modalStyles';
-
-const randomDate = (start, end) => {
-    return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
-}
-
-const formatMoney = monto => {
-    return '$ ' + (monto / 100).toFixed(2);
-}
-
-const fechas = [...new Array(1000)].map( (v, i) => randomDate(new Date(2012, 0, 1), new Date()) );
-
-const montos = [...new Array(1000)].map( (v, i) => (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 200000) + 1000 );
+import { getData } from '../api/storage';
 
 class CuentasScrollView extends React.Component {
     state = {
         modalVisible: false,
         modalText: "",
+        entries: []
     }
+
+    componentDidMount = () => {
+        this.getEntries();
+    }
+
+    getEntries = () => {
+        getData().then(obj => {
+            if(obj.error) {
+                this.toggleModalVisible(obj.error);
+            } else {
+                const sortedOBj = obj.sort( (a, b) => new Date(b.val.fecha) - new Date(a.val.fecha) );
+                this.setState(prevState => ({...prevState, entries: sortedOBj.map(this.componentFromEntry)}) );
+            }
+        });
+    };
+
+    componentFromEntry = entry => (
+        <CuentaEntry
+            key={entry.key}
+            monto={entry.val.monto}
+            fecha={new Date(entry.val.fecha)}
+            descripcion={entry.val.descripcion}
+            onTouch={this.toggleModalVisible}
+        />
+    );
     
     toggleModalVisible = text => {
         this.setState(prevState => ({...prevState, modalVisible: !prevState.modalVisible, modalText: text || ''}));
-    }
-
-    getEntries = mockNumber => {
-        return [...new Array(mockNumber)].map( (v, i) => (
-            <CuentaEntry
-                key={i}
-                monto={montos[i]}
-                fecha={fechas[i]}
-                descripcion={montos[i] < 0 ? `gastaste ${formatMoney(-montos[i])} por boludo` : `ganaste ${formatMoney(montos[i])} por capo`}
-                onTouch={this.toggleModalVisible}
-            />
-        ));
-    }
+    };
 
     render() {
         return(
             <>
                 <ScrollView style={generalStyles.fullWidth}>
-                    {this.getEntries(20)}
+                    {this.state.entries}
                 </ScrollView>
                 <Modal
                     transparent={true}

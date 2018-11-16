@@ -22,7 +22,7 @@ class AddEntryScreen extends React.Component {
             <>
                 <NavHeader toggler={() => this.props.navigation.toggleDrawer()} text="Agregar entrada"/>
                 <View style={[styles.container, generalStyles.fullWidth]}>
-                    <AddEntryForm />
+                    <AddEntryForm onSubmit={() => this.props.navigation.navigate("Cuentas")}/>
                 </View>
             </>
         );

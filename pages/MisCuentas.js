@@ -5,6 +5,7 @@ import styles from '../styles/containerStyles';
 import CuentasScrollView from '../components/CuentasScrollView';
 import generalStyles from '../styles/generalStyles';
 import { Icon } from 'react-native-elements';
+import FloatingButton from '../components/FloatingButton';
 
 class MisCuentas extends React.Component {
     static navigationOptions = {
@@ -24,6 +25,7 @@ class MisCuentas extends React.Component {
                 <View style={[styles.container, generalStyles.fullWidth]}>
                     <CuentasScrollView />
                 </View>
+                <FloatingButton icon='add' onTouch={() => this.props.navigation.navigate("AddEntry")} />
             </>
         );
     }

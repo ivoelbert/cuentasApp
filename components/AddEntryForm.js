@@ -2,40 +2,46 @@ import React from 'react';
 import { Text, TouchableHighlight, View, ScrollView, TextInput } from 'react-native';
 import generalStyles from '../styles/generalStyles';
 import formStyles from '../styles/formStyles';
-import { Icon } from 'react-native-elements'
+import { Icon } from 'react-native-elements';
+import { storeData } from '../api/storage';
+
+const SwitchItem = props => (
+    <TouchableHighlight
+        style={[
+            formStyles.switchItem,
+            props.style,
+            {backgroundColor: props.selected ? '#f4f4f4' : props.color.main}
+        ]}
+        onPress={props.onTouch}
+        underlayColor={props.color.secondary}
+        activeOpacity={0.5}>
+        <View>
+            <Text style={{paddingHorizontal: 20, paddingVertical: 10, fontSize: 16, color: props.selected > 0 ? '#b2b2b2' : 'white'}}>
+                {props.children}
+            </Text>
+        </View>
+    </TouchableHighlight>
+);
 
 const Switch = props => (
     <View style={formStyles.switch}>
-        <TouchableHighlight
-            style={[
-                formStyles.switchItem,
-                formStyles.switchItemFirst,
-                {backgroundColor: props.selected > 0 ? '#f4f4f4' : '#ce1c1c'}
-            ]}
-            onPress={() => props.onTouch(-1)}
-            underlayColor='#ba1616'
-            activeOpacity={0.5}>
-            <View>
-                <Text style={{paddingHorizontal: 20, paddingVertical: 10, fontSize: 16, color: props.selected > 0 ? '#b2b2b2' : 'white'}}>
-                    Pago
-                </Text>
-            </View>
-        </TouchableHighlight>
-        <TouchableHighlight
-            style={[
-                formStyles.switchItem,
-                formStyles.switchItemLast,
-                {backgroundColor: props.selected < 0 ? '#f4f4f4' : '#43bf24'}
-            ]}
-            onPress={() => props.onTouch(1)}
-            underlayColor='#3aaa1e'
-            activeOpacity={0.5}>
-            <View>
-                <Text style={{paddingHorizontal: 20, paddingVertical: 10, fontSize: 16, color: props.selected < 0 ? '#b2b2b2' : 'white'}}>
-                    Recibo
-                </Text>
-            </View>
-        </TouchableHighlight>
+        <SwitchItem
+            selected={props.selected > 0}
+            color={{main: '#ce1c1c', secondary: '#ba1616'}}
+            onTouch={() => props.onTouch(-1)}
+            style={formStyles.switchItemFirst}
+        >
+            Pago
+        </SwitchItem>
+
+        <SwitchItem
+            selected={props.selected < 0}
+            color={{main: '#43bf24', secondary: '#3aaa1e'}}
+            onTouch={() => props.onTouch(1)}
+            style={formStyles.switchItemLast}
+        >
+            Recibo
+        </SwitchItem>
     </View>
 );
 
@@ -47,8 +53,7 @@ class AddEntryForm extends React.Component {
     state = {
         selectedSwitch: -1,
         monto: 0,
-        descripcion: "",
-        text: ""
+        descripcion: ""
     }
 
     selectSwitch = which => {
@@ -64,9 +69,15 @@ class AddEntryForm extends React.Component {
     }
 
     saveData = () => {
-        
-        this.setState(prevState => ({...prevState, text: prevState.monto + prevState.descripcion}))
+        const fecha = new Date();
+        if(this.state.monto > 0 && this.state.descripcion != "") {
+            storeData(fecha, {monto: this.state.selectedSwitch * this.state.monto, fecha: fecha, descripcion: this.state.descripcion}).then(obj => {
+                this.props.onSubmit();
+            });
+        }
     }
+
+    textToCents = text => Math.round(parseFloat(text) * 100);
 
     render() {
         return(
@@ -82,7 +93,7 @@ class AddEntryForm extends React.Component {
                             autoFocus={true}
                             maxLength={10}
                             fontSize={18}
-                            onChangeText={(text) => this.updateMonto(+text)}
+                            onChangeText={text => this.updateMonto(this.textToCents(text))}
                         />
                     </View>
                     <Separator />
@@ -102,13 +113,10 @@ class AddEntryForm extends React.Component {
                         underlayColor='#dbaf39'
                         activeOpacity={0.5}>
                         <Icon
-                            name='add-circle-outline'
+                            name='add'
                             size={50}
                         />
                     </TouchableHighlight>
-                    <Text>
-                        {this.state.text}
-                    </Text>
                 </View>
             </ScrollView>
         )

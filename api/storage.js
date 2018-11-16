@@ -1,29 +1,62 @@
-import { AsyncStorage } from "react-native"
+import { AsyncStorage } from "react-native";
 
-storeData = async (key, value) => {
+const getKeys = async () => {
+    return new Promise( (resolve, reject) => {
+        AsyncStorage.getAllKeys((err, keys) => {
+            if(err) resolve([]);
+            resolve(keys);
+        });
+    });
+};
+
+const getSome = async keys => {
+    return new Promise( (resolve, reject) => {
+        AsyncStorage.multiGet(keys, (err, stores) => {
+            if(err) resolve([]);
+            resolve(stores);
+        });
+    });
+};
+
+const name = '@Cuentasv3';
+
+export const cleanAll = async () => {
     try {
-        await AsyncStorage.setItem(`@Cuentas:${key}`, value);
+        const allKeys = await getKeys();
+
+        return new Promise( (resolve, reject) => {
+            const keys = allKeys.filter(key => key.indexOf('@Cuentas') !== -1);
+            AsyncStorage.multiRemove(keys, (err) => {
+                resolve();
+            });
+        });
+    } catch(err) {
+        return Promise.resolve();
+    }
+};
+
+export const storeData = async (key, value) => {
+    try {
+        const nkey = name + key;
+        const val = JSON.stringify(value);
+        await AsyncStorage.setItem(nkey, val);
     } catch (error) {
         return {error: error};
     }
+};
 
-
-getData = async () => {
+export const getData = async () => {
     try {
-        AsyncStorage.getAllKeys((err, keys) => {
-            if(err)
-                return {error: err};
-            AsyncStorage.multiGet(keys, (err, stores) => {
-                if(err)
-                    return {error: err};
-                return stores.map((result, i, store) => {
-                    // get at each store's key/value so you can work with it
-                    let key = store[i][0];
-                    let value = store[i][1];
-                });
-            });
-        });
-    } catch (error) {
-         // Error retrieving data
+        const allKeys = await getKeys();
+        const keys = allKeys.filter(key => key.indexOf(name) != -1);
+        const stores = await getSome(keys);
+        const entries = stores.map( (result, i, store) => ({
+            key: store[i][0],
+            val: JSON.parse(store[i][1])
+        }));
+
+        return entries;
+    } catch(err) {
+        return ([]);
     }
-}
+};

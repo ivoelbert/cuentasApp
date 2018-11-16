@@ -9,6 +9,16 @@ const generalStyles = StyleSheet.create({
     },
     alignCenter: {
         alignItems: 'center'
+    },
+    roundButton: {
+        width: 64,
+        height: 64,
+        borderRadius: 32,
+        position: 'absolute',
+        backgroundColor: '#e8ba3e',
+        bottom: 16,
+        right: 16,
+        elevation: 5
     }
 });
 
