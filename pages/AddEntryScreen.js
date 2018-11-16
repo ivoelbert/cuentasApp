@@ -1,17 +1,17 @@
 import React from 'react';
-import { Button, Image, View, Text } from 'react-native';
+import { Button, Image, View, ScrollView } from 'react-native';
 import NavHeader from '../components/NavHeader';
 import styles from '../styles/containerStyles';
-import CuentasScrollView from '../components/CuentasScrollView';
 import generalStyles from '../styles/generalStyles';
 import { Icon } from 'react-native-elements';
+import AddEntryForm from '../components/AddEntryForm';
 
-class MisCuentas extends React.Component {
+class AddEntryScreen extends React.Component {
     static navigationOptions = {
-        drawerLabel: 'Mis cuentas',
+        drawerLabel: 'Agregar entrada',
         drawerIcon: ({ tintColor }) => (
             <Icon
-                name='attach-money'
+                name='add-circle-outline'
                 size={24}
             />
         ),
@@ -20,13 +20,13 @@ class MisCuentas extends React.Component {
     render() {
         return (
             <>
-                <NavHeader toggler={() => this.props.navigation.toggleDrawer()} text="Mis cuentas"/>
+                <NavHeader toggler={() => this.props.navigation.toggleDrawer()} text="Agregar entrada"/>
                 <View style={[styles.container, generalStyles.fullWidth]}>
-                    <CuentasScrollView />
+                    <AddEntryForm />
                 </View>
             </>
         );
     }
 }
 
-export default MisCuentas;
+export default AddEntryScreen;
